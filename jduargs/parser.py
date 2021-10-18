@@ -32,12 +32,18 @@ class ArgumentParser:
         for key, value in data.items():
             short = value["short"]
             type = getattr(builtins, value["type"])
-            required = value["required"]
+            required = value["required"] if "required" in value.keys() else True
+            description = value["description"] if "description" in value.keys() else ""
 
-            self.add(key, short, type, required)
+            self.add(key, short, type, required, description)
 
     def add(
-        self, key: str, short: str, type: type = Type[str], required: bool = True
+        self,
+        key: str,
+        short: str,
+        type: type = Type[str],
+        required: bool = True,
+        description: str = "",
     ) -> None:
         """Add an argument to parse.
 
@@ -57,9 +63,15 @@ class ArgumentParser:
         assert isinstance(short, str), "Short must be a string."
         assert isinstance(type, Type), "Type must be a class type."
         assert isinstance(required, bool), "Required must be a boolean."
+        assert isinstance(description, str), "Description must be a string."
         assert len(short) == 1, "Short must be a single character."
 
-        self.arguments[key] = {"short": f"-{short}", "required": required, "type": type}
+        self.arguments[key] = {
+            "short": f"-{short}",
+            "required": required,
+            "type": type,
+            "description": description,
+        }
 
     def compile(self, args: List[str]):
         """Parse the input arguments with the keys previously specified.
@@ -70,7 +82,7 @@ class ArgumentParser:
             Arguments to parse
 
         """
-        if len(args) == 0:
+        if len(args) == 0 and len(self.arguments) != 0:
             print("To get help, use -h or --help command line options.")
             exit()
 
@@ -94,23 +106,30 @@ class ArgumentParser:
                 exit()
 
     def show_help(self):
+        """Displays help for the argument to pass on the command-line."""
         n_arg = len(self.arguments)
-        length_str = max([len(arg) for arg in self.arguments.keys()])
 
-        print(f"{n_arg} argument{'s' if n_arg>1 else ''} expected: ")
-        for key, value in self.arguments.items():
-            req_str = "required" if value["required"] else ""
-            print(f"{value['short']} {value['type']}: {key:{length_str+10}s}{req_str}")
+        if n_arg != 0:
+            length_str = max([len(arg) for arg in self.arguments.keys()])
 
-        print("")
-        print("Usage:")
-        print("Short keys and their values must be together. For example:")
-        print("- '-o12' for a short key being 'o' and value '12'.")
-        print("- '-dpath' for a short key being 'd' and value 'path'.")
-        print("")
-        print(
-            "Non-necessary arguments with no values provided will take the default constructor value."
-        )
+            print(f"{n_arg} argument{'s' if n_arg>1 else ''} expected: ")
+            for key, value in self.arguments.items():
+                req_str = "required" if value["required"] else ""
+                print(
+                    f"{value['short']} {value['type']}: {key:{length_str+10}s}{req_str}"
+                )
+                print(f"\t{value['description']}")
+
+            print("\nUsage:")
+            print("Short keys and their values must be together. For example:")
+            print("- '-o12' for a short key being 'o' and value '12'.")
+            print("- '-dpath' for a short key being 'd' and value 'path'.")
+            print(
+                "\nNon-necessary arguments with no values provided will take the default constructor value."
+            )
+        else:
+            print("Usage:")
+            print("No argument expected. Just run your script as you would do normaly.")
 
     def __getitem__(self, key: str) -> Any:
         """Returns the value (with the right type) associated with a given key. If the key correspond to an optional argument that has not been given, the method returns None.
@@ -126,7 +145,6 @@ class ArgumentParser:
             The value related to the given key, with the right type.
 
         """
-        assert len(self.__results), "First compile the parser."
         assert key in self.arguments, f'Key "{key}" not found.'
 
         if key not in self.__results:
