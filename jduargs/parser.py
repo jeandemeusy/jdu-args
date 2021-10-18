@@ -1,6 +1,7 @@
 from typing import Any, List, Type
 import builtins
 import json
+import copy
 
 
 class ArgumentParser:
@@ -130,6 +131,23 @@ class ArgumentParser:
         else:
             print("Usage:")
             print("No argument expected. Just run your script as you would do normaly.")
+
+    def to_json(self, filename: str):
+        """Export the arguments dictionnary to a json file.
+
+        Parameters
+        ----------
+        filename: string
+            name of the json file to send dictionnary values to.
+        """
+        args = copy.deepcopy(self.arguments)
+
+        for key in args.keys():
+            args[key]["type"] = args[key]["type"].__name__
+            args[key]["short"] = args[key]["short"][1]
+
+        with open(filename, "w") as f:
+            json.dump(args, f)
 
     def __getitem__(self, key: str) -> Any:
         """Returns the value (with the right type) associated with a given key. If the key correspond to an optional argument that has not been given, the method returns None.
