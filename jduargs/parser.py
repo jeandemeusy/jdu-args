@@ -1,6 +1,6 @@
 from typing import Any, List, Type
+import builtins
 import json
-from pydoc import locate
 
 
 class ArgumentParser:
@@ -31,7 +31,7 @@ class ArgumentParser:
 
         for key, value in data.items():
             short = value["short"]
-            type = locate(value["type"])
+            type = getattr(builtins, value["type"])
             required = value["required"]
 
             self.add(key, short, type, required)
@@ -87,11 +87,30 @@ class ArgumentParser:
                 self.__results[key] = arg[2:]
 
         for key in keys:
-            if self.arguments[key]["required"]:
-                assert key in self.__results, f"{key} is required."
+            if self.arguments[key]["required"] and key not in self.__results.keys():
+                print(
+                    f"{__class__.__name__} error: '{key}' command line argument is required. Add it using '{self.arguments[key]['short']}value'"
+                )
+                exit()
 
     def show_help(self):
-        print("MAYDAY MAYDAY MAYDAY !!")
+        n_arg = len(self.arguments)
+        length_str = max([len(arg) for arg in self.arguments.keys()])
+
+        print(f"{n_arg} argument{'s' if n_arg>1 else ''} expected: ")
+        for key, value in self.arguments.items():
+            req_str = "required" if value["required"] else ""
+            print(f"{value['short']} {value['type']}: {key:{length_str+10}s}{req_str}")
+
+        print("")
+        print("Usage:")
+        print("Short keys and their values must be together. For example:")
+        print("- '-o12' for a short key being 'o' and value '12'.")
+        print("- '-dpath' for a short key being 'd' and value 'path'.")
+        print("")
+        print(
+            "Non-necessary arguments with no values provided will take the default constructor value."
+        )
 
     def __getitem__(self, key: str) -> Any:
         """Returns the value (with the right type) associated with a given key. If the key correspond to an optional argument that has not been given, the method returns None.
@@ -116,5 +135,7 @@ class ArgumentParser:
         try:
             return self.arguments[key]["type"](self.__results[key])
         except ValueError as e:
-            print(f"ERROR with [{key}]: {e}. Using default type value.")
+            print(
+                f"{__class__.__name__} error with '{key}': {e}. Using default constructor value."
+            )
             return self.arguments[key]["type"]()

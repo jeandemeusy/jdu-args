@@ -1,6 +1,6 @@
 {
     "file": {
-        "short": "f",
+        "short": "d",
         "type": "str",
         "required": true
     },
