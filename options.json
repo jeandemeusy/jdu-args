@@ -1,0 +1,17 @@
+{
+    "file": {
+        "short": "f",
+        "type": "str",
+        "required": true
+    },
+    "path": {
+        "short": "p",
+        "type": "str",
+        "required": false
+    },
+    "offset": {
+        "short": "o",
+        "type": "int",
+        "required": true
+    }
+}
