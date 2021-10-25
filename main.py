@@ -5,7 +5,10 @@ from typing import Any, Tuple
 
 
 def command_line_arguments() -> Tuple[Any]:
-    p = ArgumentParser()
+    p = ArgumentParser(
+        description="Example use of the argument parser.",
+        epilog="Have fun !",
+    )
 
     p.from_json("options.json")
 

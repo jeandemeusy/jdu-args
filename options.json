@@ -1,13 +1,10 @@
 {
     "file": {
         "short": "f",
-        "type": "str",
-        "description": "file name without extension or parents folders",
-        "required": true
+        "description": "file name without extension or parents folders"
     },
     "path": {
         "short": "p",
-        "type": "str",
         "description": "path to database tree",
         "required": false
     },
@@ -15,6 +12,9 @@
         "short": "o",
         "type": "int",
         "description": "offset in pixel to apply to the strip image",
-        "required": true
+        "choices": [
+            10,
+            20
+        ]
     }
 }
