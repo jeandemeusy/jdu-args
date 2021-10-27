@@ -136,6 +136,8 @@ class ArgumentParser:
                 )
                 exit()
 
+        return {key: self.__getitem__(key) for key in self.arguments}
+
     def show_help(self):
         """Displays help for the argument to pass on the command-line."""
         n_arg = len(self.arguments)
@@ -212,13 +214,17 @@ class ArgumentParser:
         """
         assert key in self.arguments, f'Key "{key}" not found.'
 
+        value_type = self.arguments[key]["type"]
+
         if key not in self.__results:
-            return self.arguments[key]["type"]()
+            return value_type()
 
         try:
-            return self.arguments[key]["type"](self.__results[key])
+            if value_type == bool:
+                return value_type(eval(self.__results[key]))
+            return value_type(self.__results[key])
         except ValueError as e:
             print(
                 f"{__class__.__name__} error with '{key}': {e}. Using default constructor value."
             )
-            return self.arguments[key]["type"]()
+            return value_type()
