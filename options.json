@@ -1,7 +1,7 @@
 {
     "file": {
         "short": "f",
-        "description": "file name without extension or parents folders"
+        "description": "file name without extension"
     },
     "path": {
         "short": "p",

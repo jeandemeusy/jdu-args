@@ -3,6 +3,8 @@ import sys
 from jduargs.parser import ArgumentParser
 from typing import Any, Tuple
 
+INPUT_SOURCE = "manual"
+
 
 def command_line_arguments() -> Tuple[Any]:
     p = ArgumentParser(
@@ -10,7 +12,21 @@ def command_line_arguments() -> Tuple[Any]:
         epilog="Have fun !",
     )
 
-    p.from_json("options.json")
+    if INPUT_SOURCE.lower() == "yaml":
+        p.from_yaml("options.yaml")
+    elif INPUT_SOURCE.lower() == "json":
+        p.from_json("options.json")
+    else:
+        p.add("file", "f", description="file name without extension")
+        p.add("path", "p", required=False, description="path to database tree")
+        p.add(
+            "offset",
+            "o",
+            int,
+            description="offset in pixel to apply to the strip image",
+            choices=[10, 20],
+        )
+        p.add("flag", "d", bool)
 
     results = p.compile(sys.argv[1:])
 

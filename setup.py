@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="jduargs",
-    version="0.3.5",
+    version="0.3.6",
     scripts=["bin/jduargs"],
     author="Jean Demeusy",
     author_email="dev.jdu@gmail.com",
@@ -20,4 +20,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=["json", "pyyaml"],
 )

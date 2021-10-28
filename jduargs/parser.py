@@ -1,6 +1,7 @@
 from typing import Any, Type
 import builtins
 import json
+import yaml
 import copy
 import sys
 
@@ -52,11 +53,31 @@ class ArgumentParser:
 
             self.add(key, short, type, required, description, choices)
 
+    def from_yaml(self, path: str):
+        """Use the content of the yaml file at path to fill list of arguments to parse.
+
+        Parameters
+        ----------
+        path: string
+            Path (absolute or relative) to the json file.
+        """
+        with open(path, "r") as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+
+        for key, value in data.items():
+            short = value["short"]
+            type = getattr(builtins, value["type"]) if "type" in value.keys() else str
+            required = value["required"] if "required" in value.keys() else True
+            description = value["description"] if "description" in value.keys() else ""
+            choices = value["choices"] if "choices" in value.keys() else []
+
+            self.add(key, short, type, required, description, choices)
+
     def add(
         self,
         key: str,
         short: str,
-        type: type = Type[str],
+        type: type = str,
         required: bool = True,
         description: str = "",
         choices: list = [],
@@ -95,7 +116,7 @@ class ArgumentParser:
             "choices": [str(c) for c in choices],
         }
 
-    def compile(self, args: list[str]):
+    def compile(self, args: list[str]) -> dict:
         """Parse the input arguments with the keys previously specified.
 
         Parameters
@@ -103,8 +124,11 @@ class ArgumentParser:
         args: list of string
             Arguments to parse
 
+        Returns
+        -------
+        dict
+            dictionnary of compiled arguments keys and values
         """
-
         if len(args) == 0 and len(self.arguments) != 0 and self.add_help:
             print("To get help, use -h or --help command line options.")
             exit()
@@ -197,6 +221,23 @@ class ArgumentParser:
 
         with open(filename, "w") as f:
             json.dump(args, f)
+
+    def to_yaml(self, filename: str):
+        """Export the arguments dictionnary to a yaml file.
+
+        Parameters
+        ----------
+        filename: string
+            name of the json file to send dictionnary values to.
+        """
+        args = copy.deepcopy(self.arguments)
+
+        for key in args.keys():
+            args[key]["type"] = args[key]["type"].__name__
+            args[key]["short"] = args[key]["short"][1]
+
+        with open(filename, "w") as f:
+            yaml.dump(args, f)
 
     def __getitem__(self, key: str) -> Any:
         """Returns the value (with the right type) associated with a given key. If the key correspond to an optional argument that has not been given, the method returns None.
