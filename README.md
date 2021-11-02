@@ -17,7 +17,7 @@ from jduargs import ArgumentParser
 ```python
 parser = ArgumentParser(description="default string", epilog="default string")
 ```
-"description" and "epilog" are optional parameters. The provided strings will be respectively written at the beggining and at the end of the help provided -h or --help.
+"description" and "epilog" are optional parameters. The provided strings will be respectively written at the beginning and at the end of the help provided -h or --help.
 
 ## Methods
 
