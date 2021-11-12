@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="jduargs",
-    version="0.5",
+    version="0.5.1",
     scripts=["bin/jduargs"],
     author="Jean Demeusy",
     author_email="dev.jdu@gmail.com",
