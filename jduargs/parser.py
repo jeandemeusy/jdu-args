@@ -190,6 +190,9 @@ class ArgumentParser:
                 )
                 exit()
 
+        for key in self.arguments:
+            self.__dict__[key] = self.__getitem__(key)
+
         return {key: self.__getitem__(key) for key in self.arguments}
 
     def version(self):
