@@ -14,17 +14,19 @@ def handle_args(path: str = "") -> Tuple:
         )
         p.owner("Jean Demeusy <jean.demeusy@heig-vd.ch>", "0.2")
 
-        p.add("path", "p", required=False, description="path to database tree")
-        p.add("flag", "f", bool)
+        p.add("path", "p", required=False, help="path to database tree")
+        p.add("flag", "f", bool, required=False)
         p.add("bias", "b", float, multiple=True, choices=[10, 20, 30])
 
-    p.compile(sys.argv[1:])
+        p.to_file("options.json")
+        p.to_file("options.yaml")
+    r = p.compile(sys.argv[1:])
 
-    return p
+    return r
 
 
 if __name__ == "__main__":
-    p = handle_args("options.json")
+    p = handle_args("options.yaml")
 
     print(f"{p.flag=}")
     print(f"{p.bias=}")

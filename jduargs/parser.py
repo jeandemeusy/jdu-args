@@ -5,6 +5,8 @@ import yaml
 import copy
 import sys
 
+from .result import Result
+
 
 class ArgumentParser:
     """A simple argument parser.
@@ -58,10 +60,10 @@ class ArgumentParser:
             short = value["short"]
             type = getattr(builtins, value["type"]) if "type" in value.keys() else str
             required = value["required"] if "required" in value.keys() else True
-            description = value["description"] if "description" in value.keys() else ""
+            help = value["help"] if "help" in value.keys() else ""
             choices = value["choices"] if "choices" in value.keys() else []
             multiple = value["multiple"] if "multiple" in value.keys() else False
-            self.add(key, short, type, required, description, choices, multiple)
+            self.add(key, short, type, required, help, choices, multiple)
 
     def from_file(self, path: str):
         ext = path.split(".")[-1]
@@ -84,7 +86,7 @@ class ArgumentParser:
         short: str,
         type: type = str,
         required: bool = True,
-        description: str = "",
+        help: str = "",
         choices: list = [],
         multiple: bool = False,
     ) -> None:
@@ -100,7 +102,7 @@ class ArgumentParser:
             type of the argument. (default is str)
         required: boolean
             flag that specify if a key is mandatory. (default is True)
-        description: str
+        help: str
             description of the argument. (default is "")
         choices: list
             allowed values for the argument. (default is [])
@@ -112,7 +114,7 @@ class ArgumentParser:
         assert isinstance(short, str), "Short must be a string."
         assert isinstance(type, Type), "Type must be a class type."
         assert isinstance(required, bool), "Required must be a boolean."
-        assert isinstance(description, str), "Description must be a string."
+        assert isinstance(help, str), "Description must be a string."
         assert isinstance(choices, list), "Choices must be a list."
         assert isinstance(multiple, bool), "Multiple must be a boolean."
         assert len(short) == 1, "Short must be a single character."
@@ -121,7 +123,7 @@ class ArgumentParser:
             "short": f"-{short}",
             "required": required,
             "type": type,
-            "description": description,
+            "help": help,
             "choices": [str(c) for c in choices],
             "multiple": multiple,
         }
@@ -190,10 +192,12 @@ class ArgumentParser:
                 )
                 exit()
 
-        for key in self.arguments:
-            self.__dict__[key] = self.__getitem__(key)
+        result = Result()
 
-        return {key: self.__getitem__(key) for key in self.arguments}
+        for key in self.arguments:
+            result.__dict__[key] = self.__getitem__(key)
+
+        return result
 
     def version(self):
         """Displays the current version of the program."""
@@ -258,13 +262,13 @@ class ArgumentParser:
             print(f" (list of values accepted)")
         else:
             print("")
-        if value["description"]:
-            print(f"\t{value['description']}")
+        if value["help"]:
+            print(f"\t{value['help']}")
         if value["choices"]:
             print(f"\tPossible values are {value['choices']}")
 
     def to_file(self, path: str):
-        """Export the arguments dictionnary to a json file.
+        """Export the arguments dictionnary to file. THe file extension must be .json or .yaml.
 
         Parameters
         ----------
