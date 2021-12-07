@@ -3,7 +3,7 @@ class Result:
 
     def __init__(self):
         """
-        Initialisation of the class.
+        Initialization of the class.
         """
         pass
 

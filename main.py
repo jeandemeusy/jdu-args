@@ -16,7 +16,7 @@ def handle_args(path: str = "") -> Tuple:
 
         p.add("path", "p", required=False, help="path to database tree")
         p.add("flag", "f", bool, required=False)
-        p.add("bias", "b", float, multiple=True, choices=[10, 20, 30])
+        p.add("bias", "b", float, required=False, multiple=True, choices=[10, 20, 30])
 
         p.to_file("options.json")
         p.to_file("options.yaml")
@@ -26,7 +26,7 @@ def handle_args(path: str = "") -> Tuple:
 
 
 if __name__ == "__main__":
-    p = handle_args("options.yaml")
+    p = handle_args()
 
     print(f"{p.flag=}")
     print(f"{p.bias=}")

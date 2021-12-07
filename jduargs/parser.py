@@ -23,7 +23,7 @@ class ArgumentParser:
         add_help: bool = True,
     ):
         """
-        Initialisation of the class.
+        Initialization of the class.
 
         Parameters
         ----------
@@ -75,7 +75,9 @@ class ArgumentParser:
             with open(path, "r") as f:
                 data = yaml.load(f, Loader=yaml.FullLoader)
         else:
-            print("Not a valid file extension. Option file must be a jsonor yaml file.")
+            print(
+                "Not a valid file extension. Option file must be a json or yaml file."
+            )
             exit()
 
         self.from_dict(data)
@@ -145,7 +147,11 @@ class ArgumentParser:
         shorts = [value["short"] for _, value in self.arguments.items()]
 
         if self.add_help:
-            if len(args) == 0 and len(self.arguments) != 0:
+            if (
+                len(args) == 0
+                and len([key for key, arg in self.arguments.items() if arg["required"]])
+                != 0
+            ):
                 print("To get help, use -h or --help command line options.")
                 exit()
 
