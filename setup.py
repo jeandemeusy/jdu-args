@@ -13,7 +13,7 @@ setuptools.setup(
     description="A simple command line argument parser package.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/jeandemeusy/jdu_args",
+    url="https://github.com/jeandemeusy/jdu-args",
     packages=["jduargs"],
     classifiers=[
         "Programming Language :: Python :: 3",
